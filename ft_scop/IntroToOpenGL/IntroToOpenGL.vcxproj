@@ -449,6 +449,8 @@
     <ClInclude Include="src\vendor\stb_image\stb_image.h" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="res\shaders\FragmentShader.glsl" />
+    <None Include="res\shaders\VertexShader.glsl" />
     <None Include="src\vendor\glm\detail\func_common.inl" />
     <None Include="src\vendor\glm\detail\func_common_simd.inl" />
     <None Include="src\vendor\glm\detail\func_exponential.inl" />
