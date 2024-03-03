@@ -3,10 +3,10 @@
 #include <string>
 #include <sstream>
 
+#include "vendor/stb_image/stb_image.h"
+
 #include "ft_OpenGL.h"
-
 #include "ImGuiDebugger.h"
-
 #include "Shader.h"
 
 int main(void)
@@ -39,37 +39,79 @@ int main(void)
     
 
 
-    Shader shader("./res/shaders/VertexShader.glsl", "./res/shaders/FragmentShader.glsl");
+    
 
     float vertices[] = {
-        //positions           //color
-        -0.5f, -0.5f, 0.0f,   1.0f,  0.0f, 0.0f, //v1
-         0.5f, -0.5f, 0.0f,   0.0f,  1.0f, 0.0f, //v2
-         0.0f,  0.5f, 0.0f,   0.0f,  0.0f, 1.0f  //v3
+        // positions          // colors           // texture coords
+         0.5f,  0.5f, 0.0f,   1.0f, 0.0f, 0.0f,   1.0f, 1.0f,   // top right
+         0.5f, -0.5f, 0.0f,   0.0f, 1.0f, 0.0f,   1.0f, 0.0f,   // bottom right
+        -0.5f, -0.5f, 0.0f,   0.0f, 0.0f, 1.0f,   0.0f, 0.0f,   // bottom left
+        -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
+    };
+
+    unsigned int indices[] = {
+    0, 1, 3, // first triangle
+    1, 2, 3  // second triangle
     };
 
     unsigned int VAO;
-    unsigned int VBO;
-
     glGenVertexArrays(1, &VAO);
-    glGenBuffers(1, &VBO);
-    //important to first bind the Vertex array object, then the vertex buffer
     glBindVertexArray(VAO);
+    //important to first bind the Vertex array object, then the vertex buffer
 
-    glBindBuffer(GL_ARRAY_BUFFER, VBO);
+    unsigned int vb;
+    glGenBuffers(1, &vb);
+    glBindBuffer(GL_ARRAY_BUFFER, vb);
     glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
 
+    unsigned int ib;
+    glGenBuffers(1, &ib);
+    glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
+    glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+
     //position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 6 * sizeof(float), (void*)0);
+    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 8 * sizeof(float), (void*)0);
     glEnableVertexAttribArray(0);
 
     //color attribute
-    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 6 * sizeof(float), (void*)(3 * sizeof(float)));
+    glVertexAttribPointer(1, 3, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(3 * sizeof(float)));
     glEnableVertexAttribArray(1);
 
-    shader.Bind();
+    //texture coords
+    glVertexAttribPointer(2, 2, GL_FLOAT, GL_FALSE, 8 * sizeof(float), (void*)(6 * sizeof(float)));
+    glEnableVertexAttribArray(2);
 
-    glDrawArrays(GL_TRIANGLES, 0, 3);
+
+    int width, height, nrChannels;
+    unsigned char* data = stbi_load("./res/textures/container.jpg", &width, &height, &nrChannels, 0);
+
+    unsigned int texture;
+    glGenTextures(1, &texture);
+    glBindTexture(GL_TEXTURE_2D, texture);
+
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_S, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_WRAP_T, GL_MIRRORED_REPEAT);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MIN_FILTER, GL_NEAREST);
+    glTexParameteri(GL_TEXTURE_2D, GL_TEXTURE_MAG_FILTER, GL_LINEAR);
+
+    if (data) {
+        glTexImage2D(GL_TEXTURE_2D, 0, GL_RGB, width, height, 0, GL_RGB, GL_UNSIGNED_BYTE, data);
+        glGenerateMipmap(GL_TEXTURE_2D);
+    }
+    else {
+        std::cout << "Failed to load texture" << std::endl;
+    }
+    stbi_image_free(data);
+
+    Shader shader("./res/shaders/VertexShader.glsl", "./res/shaders/FragmentShader.glsl");
+
+
+
+    shader.Bind();
+    
+    glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+
+
     ImGuiDebugger imGui(window);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
@@ -83,9 +125,7 @@ int main(void)
         //shader.SetUniform4f("ourColor", 0.0f, greenValue, 0.0f, 1.0f);
 
 
-
-
-        glDrawArrays(GL_TRIANGLES, 0, 3);
+        glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
 
 
         imGui.Render();
@@ -94,6 +134,10 @@ int main(void)
     }
 
     imGui.Destroy();
+
+    glDeleteVertexArrays(1, &VAO);
+    glDeleteBuffers(1, &vb);
+    glDeleteBuffers(1, &ib);
 
     glfwTerminate();
     return 0;
