@@ -9,3 +9,5 @@
 
 #include "glm/glm.hpp"
 #include "glm/gtc/matrix_transform.hpp"
+
+#include "vendor/stb_image/stb_image.h"
