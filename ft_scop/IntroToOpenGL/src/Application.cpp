@@ -23,7 +23,7 @@ int main(void)
     glfwWindowHint(GLFW_OPENGL_PROFILE,GLFW_OPENGL_CORE_PROFILE);
 
     /* Create a windowed mode window and its OpenGL context */
-    window = glfwCreateWindow(960, 540, "Hello World", NULL, NULL);
+    window = glfwCreateWindow(540, 540, "Hello World", NULL, NULL);
     if (!window) {
         glfwTerminate();
         return -1;
@@ -99,12 +99,36 @@ int main(void)
     shader.SetUniform1i("texture2", 1);
 
 
+
+    //glm::vec4 vec(1.0f, 0.0f, 0.0f, 1.0f);
+    //glm::mat4 trans = glm::mat4(1.0f);
+    //Print4x4Matrix(trans);
+    ////trans = glm::translate(trans, glm::vec3(1.0f, 1.0f, 0.0f));
+
+    //trans = glm::rotate(trans, glm::radians(90.0f), glm::vec3(0.0, 0.0, 1.0));
+    //Print4x4Matrix(trans);
+    //trans = glm::scale(trans, glm::vec3(0.5, 0.5, 0.5));
+    //Print4x4Matrix(trans);
+    //vec = trans * vec;
+    //PrintVec4(vec);
+
+
+    
+
+
+
+
+
     ImGuiDebugger imGui(window);
     /* Loop until the user closes the window */
     while (!glfwWindowShouldClose(window))
     {
         glClear(GL_COLOR_BUFFER_BIT);
         glClearColor(0.2f, 0.3f, 0.3f, 1.0f);
+
+        glm::mat4 trans = glm::mat4(1.0f);
+        trans = glm::rotate(trans, (float)glfwGetTime(), glm::vec3(0.0f, 0.0f, 1.0f));
+        shader.SetUniformMatrix4fv("transform", trans);
 
 
         //float timeValue = glfwGetTime();
