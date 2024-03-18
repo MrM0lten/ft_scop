@@ -144,6 +144,7 @@
     <ClCompile Include="src\Application.cpp" />
     <ClCompile Include="src\helper.cpp" />
     <ClCompile Include="src\ImGuiDebugger.cpp" />
+    <ClCompile Include="src\LoadObject.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />

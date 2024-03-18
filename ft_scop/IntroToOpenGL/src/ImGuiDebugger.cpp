@@ -1,5 +1,5 @@
 #include "ImGuiDebugger.h"
-
+#include <iostream>
 
 //:io(ImGui::GetIO())
 ImGuiDebugger::ImGuiDebugger(GLFWwindow* appWindow)
@@ -32,6 +32,13 @@ void ImGuiDebugger::Render()
 
     ImGui::Begin("Hello, world!");                          // Create a window called "Hello, world!" and append into it.
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
+
+    if (ImGui::Button("Load Mesh")) {
+        Load3DMesh("./res/models/teapot.obj");
+        std::cout << "Button was pressed" << std::endl;
+    }
+
+
     ImGui::End();
     
 
