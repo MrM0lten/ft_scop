@@ -145,6 +145,7 @@
     <ClCompile Include="src\helper.cpp" />
     <ClCompile Include="src\ImGuiDebugger.cpp" />
     <ClCompile Include="src\LoadObject.cpp" />
+    <ClCompile Include="src\Mesh.cpp" />
     <ClCompile Include="src\Shader.cpp" />
     <ClCompile Include="src\Texture.cpp" />
     <ClCompile Include="src\vendor\glm\detail\glm.cpp" />
@@ -160,6 +161,7 @@
   <ItemGroup>
     <ClInclude Include="src\ft_OpenGL.h" />
     <ClInclude Include="src\ImGuiDebugger.h" />
+    <ClInclude Include="src\Mesh.h" />
     <ClInclude Include="src\Shader.h" />
     <ClInclude Include="src\Texture.h" />
     <ClInclude Include="src\vendor\glm\common.hpp" />

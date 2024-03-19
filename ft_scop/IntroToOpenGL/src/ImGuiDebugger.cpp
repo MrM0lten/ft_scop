@@ -34,7 +34,7 @@ void ImGuiDebugger::Render()
     ImGui::Text("Application average %.3f ms/frame (%.1f FPS)", 1000.0f / _io->Framerate, _io->Framerate);
 
     if (ImGui::Button("Load Mesh")) {
-        Load3DMesh("./res/models/teapot.obj");
+        Load3DMesh("./res/models/teapot2.obj");
         std::cout << "Button was pressed" << std::endl;
     }
 

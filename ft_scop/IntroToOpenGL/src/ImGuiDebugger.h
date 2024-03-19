@@ -5,6 +5,8 @@
 
 #include <iostream>
 
+#include "Mesh.h"
+
 class ImGuiDebugger {
 public:
 	ImGuiDebugger(GLFWwindow* window);
@@ -18,4 +20,4 @@ private:
 
 
 //image loading currently set here
-void Load3DMesh(const std::string& filepath);
+Mesh* Load3DMesh(const std::string& filepath);
