@@ -9,6 +9,10 @@
 #include "ImGuiDebugger.h"
 #include "Shader.h"
 #include "Texture.h"
+#include "VertexBuffer.h"
+#include "IndexBuffer.h"
+#include "VertexArray.h"
+#include "VertexBufferLayout.h"
 
 const unsigned int SCREENWIDTH = 800;
 const unsigned int SCREENHEIGHT = 600;
@@ -107,33 +111,45 @@ int main(void)
     //    -0.5f,  0.5f, 0.0f,   1.0f, 1.0f, 0.0f,   0.0f, 1.0f    // top left 
     //};
 
-    //unsigned int indices[] = {
-    //0, 1, 3, // first triangle
-    //1, 2, 3  // second triangle
-    //};
+    unsigned int indices[] = {
+    0, 1, 2, // first triangle
+    3, 4, 5,// second triangle
+    6,7,8,
+    9,10,11,
+    12,13,14,
+    15,16,17,
+    18,19,20,
+    21,22,23,
+    24,25,26,
+    27,28,29,
+    30,31,32,
+    33,34,35
+    };
 
-    unsigned int VAO;
-    glGenVertexArrays(1, &VAO);
-    glBindVertexArray(VAO);
-    //important to first bind the Vertex array object, then the vertex buffer
 
-    unsigned int vb0;
-    glGenBuffers(1, &vb0);
-    glBindBuffer(GL_ARRAY_BUFFER, vb0);
-    glBufferData(GL_ARRAY_BUFFER, sizeof(vertices), vertices, GL_STATIC_DRAW);
+    //VertexArray va;
+    //VertexBuffer vb(vertices,36 * 5 * sizeof(float));
+    //VertexBufferLayout layout;
+    //layout.Push<float>(3);
+    //layout.Push<float>(2);
 
-    //unsigned int ib;
-    //glGenBuffers(1, &ib);
-    //glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ib);
-    //glBufferData(GL_ELEMENT_ARRAY_BUFFER, sizeof(indices), indices, GL_STATIC_DRAW);
+    //va.AddBuffer(vb, layout);
 
-    //position attribute
-    glVertexAttribPointer(0, 3, GL_FLOAT,GL_FALSE, 5 * sizeof(float), (void*)0);
-    glEnableVertexAttribArray(0);
+    //IndexBuffer ib(indices, 36);
+    //ib.Bind();
 
-    //texture coords
-    glVertexAttribPointer(1, 2, GL_FLOAT, GL_FALSE, 5 * sizeof(float), (void*)(3 * sizeof(float)));
-    glEnableVertexAttribArray(1);
+    //TEST
+    Mesh teapot("./res/models/teapot2.obj");
+    std::cout << teapot << std::endl;
+    VertexArray Mva;
+    VertexBuffer Mvb(&teapot.vertices[0], teapot.vertices.size() * sizeof(float));
+    VertexBufferLayout Mlayout;
+    Mlayout.Push<float>(3);
+
+    Mva.AddBuffer(Mvb, Mlayout);
+
+    IndexBuffer ib(&teapot.indices[0], teapot.indices.size());
+    ib.Bind();
 
 
     int width, height, nrChannels;
@@ -143,13 +159,14 @@ int main(void)
 
 
 
-    Shader shader("./res/shaders/VertexShader.glsl", "./res/shaders/FragmentShader.glsl");
+    //Shader shader("./res/shaders/VertexShader.glsl", "./res/shaders/FragmentShader.glsl");
+    Shader shader("./res/shaders/VertexShader_Debug.glsl", "./res/shaders/FragmentShader_Debug.glsl");
     shader.Bind();
 
-    Texture texture1("./res/textures/container.jpg", GL_RGB, 0);
+ /*   Texture texture1("./res/textures/container.jpg", GL_RGB, 0);
     Texture texture2("./res/textures/awesomeface.png", GL_RGBA, 1);
     shader.SetUniform1i("texture1", 0);
-    shader.SetUniform1i("texture2", 1);
+    shader.SetUniform1i("texture2", 1);*/
 
     
     glm::mat4 projection;
@@ -184,23 +201,28 @@ int main(void)
         glm::mat4 view;
         view = glm::lookAt(cameraPos, cameraPos + cameraFront, cameraUp);
 
-        for (unsigned int i = 0; i < 10; i++)
-        {
-            glm::mat4 model = glm::mat4(1.0f);
-            model = glm::translate(model, cubePositions[i]);
-            float angle = 20.0f * i;
-            model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
-            glm::mat4 trans = projection * view * model;
-            shader.SetUniformMatrix4fv("transform", trans);
+        //for (unsigned int i = 0; i < 10; i++)
+        //{
+        //    glm::mat4 model = glm::mat4(1.0f);
+        //    model = glm::translate(model, cubePositions[i]);
+        //    float angle = 20.0f * i;
+        //    model = glm::rotate(model, glm::radians(angle), glm::vec3(1.0f, 0.3f, 0.5f));
+        //    glm::mat4 trans = projection * view * model;
+        //    shader.SetUniformMatrix4fv("transform", trans);
 
-            glDrawArrays(GL_TRIANGLES, 0, 36);
-        }
+        //    //glDrawArrays(GL_TRIANGLES, 0, 36);
+        //    glDrawElements(GL_TRIANGLES, 36, GL_UNSIGNED_INT, 0);
+        //}
+        glm::mat4 model = glm::mat4(1.0f);
+        model = glm::translate(model, glm::vec3(0.0f, 0.0f, -10.0f));
+        glm::mat4 trans = projection * view * model;
+        shader.SetUniformMatrix4fv("transform", trans);
+        glDrawElements(GL_TRIANGLES, teapot.indices.size(), GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, teapot.indices.size());
 
 
-
-
-        glDrawArrays(GL_TRIANGLES, 0, 36);
-        //glDrawElements(GL_TRIANGLES, 6, GL_UNSIGNED_INT, 0);
+        //glDrawArrays(GL_TRIANGLES, 0, 36);
+        
 
 
         imGui.Render();
@@ -210,8 +232,7 @@ int main(void)
 
     imGui.Destroy();
 
-    glDeleteVertexArrays(1, &VAO);
-    glDeleteBuffers(1, &vb0);
+    //glDeleteVertexArrays(1, &VAO);
     //glDeleteBuffers(1, &ib);
 
     glfwTerminate();
